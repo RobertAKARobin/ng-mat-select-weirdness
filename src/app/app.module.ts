@@ -1,12 +1,9 @@
+import { Component, Injectable, NgModule, NgZone } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Component, Injectable, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterModule, RouterStateSnapshot } from '@angular/router';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatSelectModule } from '@angular/material/select';
-
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { GoogleApiModule, GoogleAuthService, NG_GAPI_CONFIG } from 'ng-gapi';
 
 import { googleClientId } from 'src/environments/.google'; // e.g. 123abcxyz.apps.googleusercontent.com
@@ -18,20 +15,29 @@ import { googleClientId } from 'src/environments/.google'; // e.g. 123abcxyz.app
 export class AppComponent {}
 
 @Component({
-  template: `<p>Click below</p>
-  <mat-select style="outline: 1px solid #999; width: 300px" [value]="111">
-    <mat-option *ngFor="let value of [111, 222, 333]" [value]="value">{{ value }}</mat-option>
-  </mat-select>`
+  template: `<button (click)="didClick()">Click me</button>`
 })
-export class ViewComponent {}
+export class ViewComponent {
+  constructor(
+    private ngZone: NgZone,
+  ) { }
+
+  didClick() {
+    this.ngZone.onUnstable.pipe(take(1)).subscribe(() => console.log('unstable'));
+    this.ngZone.onMicrotaskEmpty.pipe(take(1)).subscribe(() => console.log('microtask empty'));
+    this.ngZone.onStable.pipe(take(1)).subscribe(() => console.log('stable'));
+    this.ngZone.onError.pipe(take(1)).subscribe(() => console.log('error'));
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
   constructor(
     private googleAuth: GoogleAuthService,
-  ) {}
+  ) {
+  }
 
-  public canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  public canActivate(): Observable<boolean> {
     return this.googleAuth.getAuth().pipe(map(() => true));
   }
 }
@@ -43,8 +49,6 @@ export class AuthGuard implements CanActivate {
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
-    MatSelectModule,
     RouterModule.forRoot([
       {
         path: '',
