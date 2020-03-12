@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { GoogleApiModule, GoogleAuthService, NG_GAPI_CONFIG } from 'ng-gapi';
 
-import { googleClientId } from 'src/environments/.google';
+import { googleClientId } from 'src/environments/.google'; // e.g. 123abcxyz.apps.googleusercontent.com
 
 @Component({
   selector: 'app-root',
@@ -18,30 +18,21 @@ import { googleClientId } from 'src/environments/.google';
 export class AppComponent {}
 
 @Component({
-  selector: 'app-view',
-  template: `
-  <p>Click below</p>
+  template: `<p>Click below</p>
   <mat-select style="outline: 1px solid #999; width: 300px" [value]="111">
     <mat-option *ngFor="let value of [111, 222, 333]" [value]="value">{{ value }}</mat-option>
-  </mat-select>
-`
+  </mat-select>`
 })
 export class ViewComponent {}
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
   constructor(
     private googleAuth: GoogleAuthService,
   ) {}
 
   public canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.googleAuth
-      .getAuth()
-      .pipe(
-        map(() => true),
-      );
+    return this.googleAuth.getAuth().pipe(map(() => true));
   }
 }
 
@@ -70,6 +61,6 @@ export class AuthGuard implements CanActivate {
       },
     }),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
