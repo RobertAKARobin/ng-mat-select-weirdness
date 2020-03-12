@@ -1,0 +1,15 @@
+<mat-card>
+  <button mat-flat-button color="primary">This does nothing</button>
+
+  <app-paginator #paginator
+    [countMax]="123"
+  >
+    <ng-container paginator-label>
+      Items Per Page:
+    </ng-container>
+
+    <ng-container paginator-status>
+      <p>{{ paginator.offset + 1 }}-{{ paginator.lastIndexOfCurrentPage }} of {{ paginator.countMax }} demos</p>
+    </ng-container>
+  </app-paginator>
+</mat-card>
