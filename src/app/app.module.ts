@@ -2,8 +2,8 @@ import { Component, Injectable, NgModule, NgZone } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, CanActivate, RouterModule, RouterStateSnapshot } from '@angular/router';
 
-import { Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
 import { GoogleApiModule, GoogleAuthService, NG_GAPI_CONFIG } from 'ng-gapi';
 
 import { googleClientId } from 'src/environments/.google'; // e.g. 123abcxyz.apps.googleusercontent.com
@@ -37,8 +37,14 @@ export class AuthGuard implements CanActivate {
   ) {
   }
 
-  public canActivate(): Observable<boolean> {
-    return this.googleAuth.getAuth().pipe(map(() => true));
+  // This doesn't work :(
+  // public canActivate(): Observable<boolean> {
+  //   return this.googleAuth.getAuth().pipe(map(() => true));
+  // }
+
+  // This does work :)
+  public canActivate(): Promise<boolean> {
+    return this.googleAuth.getAuth().pipe(map(() => true)).toPromise();
   }
 }
 
